@@ -23,18 +23,19 @@ namespace InduSoft.Visio.Addin
         private rootRibbon ribbon;
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
+            // TODO: Сделать поток который бы опрашивал все сервера
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
         {
+            // TODO: Убить поток который опрашивает сервера
         }
 
         protected override Microsoft.Office.Core.IRibbonExtensibility CreateRibbonExtensibilityObject()
         {
             ribbon = new rootRibbon();
             ribbon.btnTestClicked += ribbon_btnTestClicked;
-            return Globals.Factory.GetRibbonFactory().CreateRibbonManager(new IRibbonExtension[] { ribbon });
-            //TEST2
+            return Globals.Factory.GetRibbonFactory().CreateRibbonManager(new IRibbonExtension[] { ribbon })
         }
 
         private void ribbon_btnTestClicked()
@@ -42,6 +43,7 @@ namespace InduSoft.Visio.Addin
             PISDK.PISDK sdk = new PISDK.PISDK();
             Server ser = sdk.Servers.DefaultServer;
             ser.Open();
+            log.WriteDebug(ser.PIPoints["sinusoid"].Data.Snapshot.Value);
         }
 
         #region VSTO generated code
