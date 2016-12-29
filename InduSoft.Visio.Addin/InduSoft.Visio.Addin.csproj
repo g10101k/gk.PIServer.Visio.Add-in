@@ -106,9 +106,6 @@
   -->
   <ItemGroup>
     <Reference Include="Accessibility" />
-    <Reference Include="gLog">
-      <HintPath>..\..\consoleattach\consoleattach\consoleattach\bin\Debug\gLog.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -154,6 +151,9 @@
     can be found.
   -->
   <ItemGroup>
+    <Compile Include="log.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="rootRibbon.cs">
       <SubType>Component</SubType>
     </Compile>
