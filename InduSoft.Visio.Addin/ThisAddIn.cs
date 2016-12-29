@@ -34,7 +34,7 @@ namespace InduSoft.Visio.Addin
             ribbon = new rootRibbon();
             ribbon.btnTestClicked += ribbon_btnTestClicked;
             return Globals.Factory.GetRibbonFactory().CreateRibbonManager(new IRibbonExtension[] { ribbon });
-            //TEST
+            //TEST2
         }
 
         private void ribbon_btnTestClicked()
