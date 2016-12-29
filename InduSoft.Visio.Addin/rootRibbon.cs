@@ -13,6 +13,8 @@ namespace InduSoft.Visio.Addin
     {
         public event Action btnTestClicked;
         public event Action btnFindISPValueClicked;
+        public event Action button1ClickEd;
+
         private void InduSoft_Load(object sender, RibbonUIEventArgs e)
         {
 
@@ -24,6 +26,7 @@ namespace InduSoft.Visio.Addin
                 btnTestClicked();
         }
 
+
         private void btnFindISPValue_Click(object sender, RibbonControlEventArgs e)
         {
 
@@ -31,6 +34,10 @@ namespace InduSoft.Visio.Addin
                 btnFindISPValueClicked();
             return;
 
+        private void button1_Click(object sender, RibbonControlEventArgs e)
+        {
+            if (button1ClickEd != null)
+                button1ClickEd();
         }
     }
 }

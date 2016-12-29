@@ -15,17 +15,23 @@ using Microsoft.Win32;
 using Visio = Microsoft.Office.Interop.Visio;
 using Office = Microsoft.Office.Core;
 using PISDK;
+using System.Threading;
 
 namespace InduSoft.Visio.Addin
 {
+    public delegate void ExampleCallback(string txt);
+
     public partial class ThisAddIn
     {
         private rootRibbon ribbon;
+        private log log = new log();
+        private string str = "";
+        delegate void SetTextCallbackFromThread(string text);
+
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
             // TODO: Сделать поток который бы опрашивал все сервера
-
-
+            log.Show();
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
@@ -38,16 +44,37 @@ namespace InduSoft.Visio.Addin
             ribbon = new rootRibbon();
             ribbon.btnTestClicked += ribbon_btnTestClicked;
             ribbon.btnFindISPValueClicked += ribbon_btnFindISPValueClicked;
+            ribbon.button1ClickEd += button1_Click;
             return Globals.Factory.GetRibbonFactory().CreateRibbonManager(new IRibbonExtension[] { ribbon });
         }
 
         private void ribbon_btnTestClicked()
         {
+
           //  PISDK.PISDK sdk = new PISDK.PISDK();
            // Server ser = sdk.Servers.DefaultServer;
           //  ser.Open();
           //  log.WriteDebug(ser.PIPoints["sinusoid"].Data.Snapshot.Value);
+
+            iWorker w = new iWorker(new ExampleCallback(ResultCallback));
+            Thread t = new Thread(new ThreadStart(w.func));
+            t.Start();
         }
+
+        private void button1_Click()
+        {
+            log.WriteDebug(str);
+        }
+        /// <summary>
+        /// Через эту функцию поток вернет свой текст
+        /// </summary>
+        /// <param name="txt">Возвращаемый текст</param>
+        public void ResultCallback(string txt)
+        {
+            str = txt;           
+
+        }
+      
         private void ribbon_btnFindISPValueClicked()
         {
             Microsoft.Office.Interop.Visio.Document vD = this.Application.ActiveDocument;
@@ -80,5 +107,28 @@ namespace InduSoft.Visio.Addin
         }
         
         #endregion
+    }
+
+    class iWorker
+    {
+        Thread thread;
+        private ExampleCallback callback;
+
+        public iWorker(ExampleCallback _callback) //Конструктор получает имя функции и номер до кторого ведется счет
+        {
+            callback = _callback;
+            //thread = new Thread(this.func);
+            //thread.Name = name;
+            //thread.Start(10);//передача параметра в поток
+        }
+
+        public void func()//Функция потока, передаем параметр
+        {
+            for (int i = 0; i < (int)100; i++)
+            {
+                callback(i.ToString());
+                Thread.Sleep(1000 * new Random().Next(5));
+            }
+        }
     }
 }
