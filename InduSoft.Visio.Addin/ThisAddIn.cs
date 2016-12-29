@@ -1,8 +1,17 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
+using Microsoft.Office.Tools.Excel;
+using System.Windows.Forms;
+using Microsoft.Office.Tools.Ribbon;
+using System.Data.SqlClient;
+using System.Data;
+using System.Runtime.InteropServices;
+using System.Diagnostics;
+using Microsoft.Win32;
 using Visio = Microsoft.Office.Interop.Visio;
 using Office = Microsoft.Office.Core;
 
@@ -10,12 +19,25 @@ namespace InduSoft.Visio.Addin
 {
     public partial class ThisAddIn
     {
+        private rootRibbon ribbon;
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
         {
+        }
+
+        protected override Microsoft.Office.Core.IRibbonExtensibility CreateRibbonExtensibilityObject()
+        {
+            ribbon = new rootRibbon();
+            ribbon.btnTestClicked += ribbon_btnTestClicked;
+            return Globals.Factory.GetRibbonFactory().CreateRibbonManager(new IRibbonExtension[] { ribbon });
+        }
+
+        private void ribbon_btnTestClicked()
+        {
+            MessageBox.Show("");
         }
 
         #region VSTO generated code
