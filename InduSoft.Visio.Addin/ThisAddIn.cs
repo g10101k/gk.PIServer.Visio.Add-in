@@ -24,6 +24,8 @@ namespace InduSoft.Visio.Addin
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
             // TODO: Сделать поток который бы опрашивал все сервера
+
+
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
@@ -35,23 +37,42 @@ namespace InduSoft.Visio.Addin
         {
             ribbon = new rootRibbon();
             ribbon.btnTestClicked += ribbon_btnTestClicked;
-            return Globals.Factory.GetRibbonFactory().CreateRibbonManager(new IRibbonExtension[] { ribbon })
+            ribbon.btnFindISPValueClicked += ribbon_btnFindISPValueClicked;
+            return Globals.Factory.GetRibbonFactory().CreateRibbonManager(new IRibbonExtension[] { ribbon });
         }
 
         private void ribbon_btnTestClicked()
         {
-            PISDK.PISDK sdk = new PISDK.PISDK();
-            Server ser = sdk.Servers.DefaultServer;
-            ser.Open();
-            log.WriteDebug(ser.PIPoints["sinusoid"].Data.Snapshot.Value);
+          //  PISDK.PISDK sdk = new PISDK.PISDK();
+           // Server ser = sdk.Servers.DefaultServer;
+          //  ser.Open();
+          //  log.WriteDebug(ser.PIPoints["sinusoid"].Data.Snapshot.Value);
         }
+        private void ribbon_btnFindISPValueClicked()
+        {
+            Microsoft.Office.Interop.Visio.Document vD = this.Application.ActiveDocument;
+            Microsoft.Office.Interop.Visio.Page vAP = vD.Application.ActivePage;
+            
+            foreach (Microsoft.Office.Interop.Visio.Shape vSh in vAP.Shapes)
+            {
+                
+                if (vSh.MasterShape.Name == "ISPValue")
+                {
+                    vSh.Text = "0,00";
+                }
 
+            }
+
+
+
+
+        }
         #region VSTO generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
+            /// <summary>
+            /// Required method for Designer support - do not modify
+            /// the contents of this method with the code editor.
+            /// </summary>
         private void InternalStartup()
         {
             this.Startup += new System.EventHandler(ThisAddIn_Startup);

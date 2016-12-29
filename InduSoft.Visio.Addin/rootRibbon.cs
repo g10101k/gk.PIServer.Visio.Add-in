@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Office.Tools.Ribbon;
+using Microsoft.Win32;
+using Visio = Microsoft.Office.Interop.Visio;
+using Office = Microsoft.Office.Core;
 
 namespace InduSoft.Visio.Addin
 {
     public partial class rootRibbon
     {
         public event Action btnTestClicked;
+        public event Action btnFindISPValueClicked;
         private void InduSoft_Load(object sender, RibbonUIEventArgs e)
         {
 
@@ -18,6 +22,15 @@ namespace InduSoft.Visio.Addin
         {
             if (btnTestClicked != null)
                 btnTestClicked();
+        }
+
+        private void btnFindISPValue_Click(object sender, RibbonControlEventArgs e)
+        {
+
+            if (btnFindISPValueClicked != null)
+                btnFindISPValueClicked();
+            return;
+
         }
     }
 }
