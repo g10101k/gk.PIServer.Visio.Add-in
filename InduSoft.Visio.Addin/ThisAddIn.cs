@@ -43,12 +43,19 @@ namespace InduSoft.Visio.Addin
         {
             ribbon = new rootRibbon();
             ribbon.btnTestClicked += ribbon_btnTestClicked;
+            ribbon.btnFindISPValueClicked += ribbon_btnFindISPValueClicked;
             ribbon.button1ClickEd += button1_Click;
             return Globals.Factory.GetRibbonFactory().CreateRibbonManager(new IRibbonExtension[] { ribbon });
         }
 
         private void ribbon_btnTestClicked()
         {
+
+          //  PISDK.PISDK sdk = new PISDK.PISDK();
+           // Server ser = sdk.Servers.DefaultServer;
+          //  ser.Open();
+          //  log.WriteDebug(ser.PIPoints["sinusoid"].Data.Snapshot.Value);
+
             iWorker w = new iWorker(new ExampleCallback(ResultCallback));
             Thread t = new Thread(new ThreadStart(w.func));
             t.Start();
@@ -64,15 +71,35 @@ namespace InduSoft.Visio.Addin
         /// <param name="txt">Возвращаемый текст</param>
         public void ResultCallback(string txt)
         {
-            str = txt;            
-        }
+            str = txt;           
 
+        }
+      
+        private void ribbon_btnFindISPValueClicked()
+        {
+            Microsoft.Office.Interop.Visio.Document vD = this.Application.ActiveDocument;
+            Microsoft.Office.Interop.Visio.Page vAP = vD.Application.ActivePage;
+            
+            foreach (Microsoft.Office.Interop.Visio.Shape vSh in vAP.Shapes)
+            {
+                
+                if (vSh.MasterShape.Name == "ISPValue")
+                {
+                    vSh.Text = "0,00";
+                }
+
+            }
+
+
+
+
+        }
         #region VSTO generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
+            /// <summary>
+            /// Required method for Designer support - do not modify
+            /// the contents of this method with the code editor.
+            /// </summary>
         private void InternalStartup()
         {
             this.Startup += new System.EventHandler(ThisAddIn_Startup);

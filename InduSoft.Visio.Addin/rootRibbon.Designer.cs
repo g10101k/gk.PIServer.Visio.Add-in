@@ -37,7 +37,11 @@
             this.tab1 = this.Factory.CreateRibbonTab();
             this.group1 = this.Factory.CreateRibbonGroup();
             this.btnTest = this.Factory.CreateRibbonButton();
+
+            this.btnFindISPValue = this.Factory.CreateRibbonButton();
+
             this.button1 = this.Factory.CreateRibbonButton();
+
             this.tab1.SuspendLayout();
             this.group1.SuspendLayout();
             this.SuspendLayout();
@@ -52,6 +56,7 @@
             // group1
             // 
             this.group1.Items.Add(this.btnTest);
+            this.group1.Items.Add(this.btnFindISPValue);
             this.group1.Label = "Helper";
             this.group1.Items.Add(this.button1);
             this.group1.Label = "group1";
@@ -62,6 +67,12 @@
             this.btnTest.Label = "btnTest";
             this.btnTest.Name = "btnTest";
             this.btnTest.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnTest_Click);
+            // 
+            // btnFindISPValue
+            // 
+            this.btnFindISPValue.Label = "FindISPValue";
+            this.btnFindISPValue.Name = "btnFindISPValue";
+            this.btnFindISPValue.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnFindISPValue_Click);
             // 
             // rootRibbon
             // button1
@@ -90,7 +101,9 @@
         internal Microsoft.Office.Tools.Ribbon.RibbonTab tab1;
         internal Microsoft.Office.Tools.Ribbon.RibbonGroup group1;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btnTest;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton btnFindISPValue;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton button1;
+
     }
 
     partial class ThisRibbonCollection
