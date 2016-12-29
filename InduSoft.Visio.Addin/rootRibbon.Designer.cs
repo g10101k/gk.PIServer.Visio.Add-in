@@ -51,7 +51,7 @@
             // group1
             // 
             this.group1.Items.Add(this.btnTest);
-            this.group1.Label = "group1";
+            this.group1.Label = "Helper";
             this.group1.Name = "group1";
             // 
             // btnTest
@@ -60,9 +60,9 @@
             this.btnTest.Name = "btnTest";
             this.btnTest.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnTest_Click);
             // 
-            // InduSoft
+            // rootRibbon
             // 
-            this.Name = "InduSoft";
+            this.Name = "rootRibbon";
             this.RibbonType = "Microsoft.Visio.Drawing";
             this.Tabs.Add(this.tab1);
             this.Load += new Microsoft.Office.Tools.Ribbon.RibbonUIEventHandler(this.InduSoft_Load);
