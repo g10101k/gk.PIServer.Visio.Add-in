@@ -41,7 +41,6 @@ namespace InduSoft.Visio.Addin
             PISDK.PISDK sdk = new PISDK.PISDK();
             Server ser = sdk.Servers.DefaultServer;
             ser.Open();
-
         }
 
         #region VSTO generated code
