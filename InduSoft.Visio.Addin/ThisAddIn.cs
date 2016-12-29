@@ -14,6 +14,7 @@ using System.Diagnostics;
 using Microsoft.Win32;
 using Visio = Microsoft.Office.Interop.Visio;
 using Office = Microsoft.Office.Core;
+using PISDK;
 
 namespace InduSoft.Visio.Addin
 {
@@ -37,7 +38,10 @@ namespace InduSoft.Visio.Addin
 
         private void ribbon_btnTestClicked()
         {
-            MessageBox.Show("");
+            PISDK.PISDK sdk = new PISDK.PISDK();
+            Server ser = sdk.Servers.DefaultServer;
+            ser.Open();
+
         }
 
         #region VSTO generated code
