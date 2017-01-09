@@ -28,8 +28,6 @@ namespace InduSoft.Visio.Addin
         private string str = "";
         delegate void SetTextCallbackFromThread(string text);
         iWorker w;
-        private Dictionary<string, Data> vals = new Dictionary<string, Data>();
-
 
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
@@ -45,9 +43,6 @@ namespace InduSoft.Visio.Addin
         protected override Microsoft.Office.Core.IRibbonExtensibility CreateRibbonExtensibilityObject()
         {
             ribbon = new rootRibbon();
-            ribbon.btnTestClicked += ribbon_btnTestClicked;
-            ribbon.btnFindISPValueClicked += ribbon_btnFindISPValueClicked;
-            ribbon.button1ClickEd += button1_Click;
             ribbon.btnWorkClick += ribbon_btnWorkClick;
             return Globals.Factory.GetRibbonFactory().CreateRibbonManager(new IRibbonExtension[] { ribbon });
         }
@@ -58,78 +53,13 @@ namespace InduSoft.Visio.Addin
            // Server ser = sdk.Servers.DefaultServer;
           //  ser.Open();
           //  log.WriteDebug(ser.PIPoints["sinusoid"].Data.Snapshot.Value);
-
-        }
-
-        private void button1_Click()
-        {
-            log.WriteDebug(str);
-        }
-        /// <summary>
-        /// Через эту функцию поток вернет свой текст
-        /// </summary>
-        /// <param name="txt">Возвращаемый текст</param>
-        public void ResultCallback(string txt)
-        {
-            str = txt;
-            Microsoft.Office.Interop.Visio.Document vD = this.Application.ActiveDocument;
-            Microsoft.Office.Interop.Visio.Page vAP = vD.Application.ActivePage;
-
-            foreach (Microsoft.Office.Interop.Visio.Shape vSh in vAP.Shapes)
-            {
-                if (vSh.Name.Contains("ISPValue"))
-                {
-                    vSh.Text = txt;
-                   
-                        //свойство "тег": Microsoft.Office.Interop.Visio.Cell cc = vSh.Cells["Prop.Row_1014"]; 
-                      
-                
-
-                }
-            }
-        }
-      
-        public void CheckGroupShapes(Microsoft.Office.Interop.Visio.Shape vSh)
-        {
-            foreach (Microsoft.Office.Interop.Visio.Shape vGSh in vSh.Shapes)
-                {
-                    if (vGSh.Name.Contains("ISPValue"))
-                    {
-                        //сюда ссылку на обработчик тега шейпа
-                        vGSh.Text = "0,00";
-                    }
-                    else if (vGSh.Shapes.Count >= 1) CheckGroupShapes(vGSh);
-                }
-        }
-
-
-        private void ribbon_btnFindISPValueClicked()
-        {
-            Microsoft.Office.Interop.Visio.Document vD = this.Application.ActiveDocument;
-            Microsoft.Office.Interop.Visio.Page vAP = vD.Application.ActivePage;
-            
-            foreach (Microsoft.Office.Interop.Visio.Shape vSh in vAP.Shapes)
-            {
-                //ищем  шейпы со значениями и проверяем на группировку
-                if (vSh.Shapes.Count >= 1)
-                {
-                    CheckGroupShapes(vSh);
-                }
-                //если группировки нет 
-                else if (vSh.Name.Contains("ISPValue"))
-                {
-                    // сюда ссылку на обработчик тега шейпа
-                    vSh.Text = "0,00";
-                    
-                }
-            }
         }
 
         private void ribbon_btnWorkClick()
         {
             if (ribbon.btnWorkClicked)
             {
-                w = new iWorker(new ExampleCallback(ResultCallback), this.Application.ActivePage);
+                w = new iWorker(this.Application.ActivePage);
                 w.thread.Start();
             }
             else if (w != null)
@@ -160,9 +90,8 @@ namespace InduSoft.Visio.Addin
         private ExampleCallback callback;
         private Microsoft.Office.Interop.Visio.Page page;
 
-        public iWorker(ExampleCallback _callback, Microsoft.Office.Interop.Visio.Page _page) //Конструктор получает имя функции и номер до кторого ведется счет
+        public iWorker(Microsoft.Office.Interop.Visio.Page _page) //Конструктор получает имя функции и номер до кторого ведется счет
         {
-            callback = _callback;
             thread = new Thread(new ThreadStart(this.func));
             page = _page;
         }
@@ -185,13 +114,6 @@ namespace InduSoft.Visio.Addin
                 }
 
             }
-            return;
-                 
-            for (int i = 0; i < (int)100; i++)
-            {
-                callback(i.ToString());
-                Thread.Sleep(1000 * new Random().Next(5));
-            }
         }
 
         public void CheckGroupShapes(Microsoft.Office.Interop.Visio.Shape vSh)
@@ -205,19 +127,6 @@ namespace InduSoft.Visio.Addin
                 }
                 else if (vGSh.Shapes.Count >= 1) CheckGroupShapes(vGSh);
             }
-        }
-    }
-
-    class Data {
-        public string Path { get; set; }
-        public string Value { get; set; }
-        public DateTime Date { get; set; }
-
-        public Data(string _path, string _value, DateTime _date)
-        {
-            Path = _path;
-            Value = _value;
-            Date = _date;
         }
     }
 }
