@@ -54,12 +54,10 @@ namespace InduSoft.Visio.Addin
 
         private void ribbon_btnTestClicked()
         {
-
           //  PISDK.PISDK sdk = new PISDK.PISDK();
            // Server ser = sdk.Servers.DefaultServer;
           //  ser.Open();
           //  log.WriteDebug(ser.PIPoints["sinusoid"].Data.Snapshot.Value);
-
 
         }
 
@@ -166,6 +164,11 @@ namespace InduSoft.Visio.Addin
 
         public void func()//Функция потока, передаем параметр
         {
+            if (vals.Count == 0)
+            {
+                vals.Add("TEST", new Data("path", "", DateTime.Now));
+            }
+            
             for (int i = 0; i < (int)100; i++)
             {
                 callback(i.ToString());
