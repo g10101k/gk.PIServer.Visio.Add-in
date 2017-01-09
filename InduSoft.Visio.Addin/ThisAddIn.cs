@@ -71,8 +71,28 @@ namespace InduSoft.Visio.Addin
         /// <param name="txt">Возвращаемый текст</param>
         public void ResultCallback(string txt)
         {
-            str = txt;           
+            str = txt;
+            Microsoft.Office.Interop.Visio.Document vD = this.Application.ActiveDocument;
+            Microsoft.Office.Interop.Visio.Page vAP = vD.Application.ActivePage;
 
+            foreach (Microsoft.Office.Interop.Visio.Shape vSh in vAP.Shapes)
+            {
+                if (vSh.Name.Contains("ISPValue"))
+                {
+                    vSh.Text = txt;
+                    try
+                    {
+                        Microsoft.Office.Interop.Visio.Cell cc = vSh.Cells["Prop.Row_1014"]; //
+                        log.WriteDebug(cc.Formula);
+                    }
+                    catch { }
+                    //foreach (Microsoft.Office.Interop.Visio.Cell c in vSh.Cells[1])
+                    {
+                        //  log.
+                    }
+
+                }
+            }
         }
       
         private void ribbon_btnFindISPValueClicked()
@@ -82,18 +102,24 @@ namespace InduSoft.Visio.Addin
             
             foreach (Microsoft.Office.Interop.Visio.Shape vSh in vAP.Shapes)
             {
-                
-                if (vSh.MasterShape.Name == "ISPValue")
+                if (vSh.Name.Contains("ISPValue"))
                 {
                     vSh.Text = "0,00";
+                    try
+                    {
+                        Microsoft.Office.Interop.Visio.Cell cc = vSh.Cells["Prop.Row_1014"]; //
+                        log.WriteDebug(cc.Formula);
+                    }
+                    catch { }
+                    //foreach (Microsoft.Office.Interop.Visio.Cell c in vSh.Cells[1])
+                    {
+                      //  log.
+                    }
+                    
                 }
-
             }
-
-
-
-
         }
+
         #region VSTO generated code
 
             /// <summary>
