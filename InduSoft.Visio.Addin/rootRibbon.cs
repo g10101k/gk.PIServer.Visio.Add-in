@@ -11,36 +11,12 @@ namespace InduSoft.Visio.Addin
 {
     public partial class rootRibbon
     {
-        public event Action btnTestClicked;
-        public event Action btnFindISPValueClicked;
-        public event Action button1ClickEd;
         public event Action btnWorkClick;
         public bool btnWorkClicked { get { return btnWork.Checked; } set { btnWork.Checked = value; } }
 
         private void InduSoft_Load(object sender, RibbonUIEventArgs e)
         {
 
-        }
-
-        private void btnTest_Click(object sender, RibbonControlEventArgs e)
-        {
-            if (btnTestClicked != null)
-                btnTestClicked();
-        }
-
-
-        private void btnFindISPValue_Click(object sender, RibbonControlEventArgs e)
-        {
-
-            if (btnFindISPValueClicked != null)
-                btnFindISPValueClicked();
-            
-        }
-
-        private void button1_Click(object sender, RibbonControlEventArgs e)
-        {
-            if (button1ClickEd != null)
-                button1ClickEd();
         }
 
         private void toggleButton1_Click(object sender, RibbonControlEventArgs e)
