@@ -32,7 +32,8 @@ namespace InduSoft.Visio.Addin
 
             if (btnFindISPValueClicked != null)
                 btnFindISPValueClicked();
-            return;
+            
+        }
 
         private void button1_Click(object sender, RibbonControlEventArgs e)
         {
