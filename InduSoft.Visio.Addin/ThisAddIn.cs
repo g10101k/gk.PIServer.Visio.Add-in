@@ -27,6 +27,9 @@ namespace InduSoft.Visio.Addin
         private log log = new log();
         private string str = "";
         delegate void SetTextCallbackFromThread(string text);
+        iWorker w;
+        private Dictionary<string, Data> vals = new Dictionary<string, Data>();
+
 
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
@@ -45,20 +48,17 @@ namespace InduSoft.Visio.Addin
             ribbon.btnTestClicked += ribbon_btnTestClicked;
             ribbon.btnFindISPValueClicked += ribbon_btnFindISPValueClicked;
             ribbon.button1ClickEd += button1_Click;
+            ribbon.btnWorkClick += ribbon_btnWorkClick;
             return Globals.Factory.GetRibbonFactory().CreateRibbonManager(new IRibbonExtension[] { ribbon });
         }
 
         private void ribbon_btnTestClicked()
         {
-
           //  PISDK.PISDK sdk = new PISDK.PISDK();
            // Server ser = sdk.Servers.DefaultServer;
           //  ser.Open();
           //  log.WriteDebug(ser.PIPoints["sinusoid"].Data.Snapshot.Value);
 
-            iWorker w = new iWorker(new ExampleCallback(ResultCallback));
-            Thread t = new Thread(new ThreadStart(w.func));
-            t.Start();
         }
 
         private void button1_Click()
@@ -83,12 +83,12 @@ namespace InduSoft.Visio.Addin
                     try
                     {
                         Microsoft.Office.Interop.Visio.Cell cc = vSh.Cells["Prop.Row_1014"]; //
-                        log.WriteDebug(cc.Formula);
+                        //log.WriteDebug(cc.Formula);
                     }
-                    catch { }
+                    catch(Exception ex)
                     //foreach (Microsoft.Office.Interop.Visio.Cell c in vSh.Cells[1])
                     {
-                        //  log.
+                        //log.WriteError(ex, null);
                     }
 
                 }
@@ -129,12 +129,26 @@ namespace InduSoft.Visio.Addin
             }
         }
 
+        private void ribbon_btnWorkClick()
+        {
+            if (ribbon.btnWorkClicked)
+            {
+                w = new iWorker(new ExampleCallback(ResultCallback), ref vals);
+                w.thread.Start();
+            }
+            else if (w != null)
+            {
+                if (w.thread.IsAlive)
+                   w.thread.Suspend();
+            }            
+        }
+
         #region VSTO generated code
 
-            /// <summary>
-            /// Required method for Designer support - do not modify
-            /// the contents of this method with the code editor.
-            /// </summary>
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
         private void InternalStartup()
         {
             this.Startup += new System.EventHandler(ThisAddIn_Startup);
@@ -146,24 +160,42 @@ namespace InduSoft.Visio.Addin
 
     class iWorker
     {
-        Thread thread;
+        public Thread thread;
         private ExampleCallback callback;
+        private Dictionary<string, Data> vals;
 
-        public iWorker(ExampleCallback _callback) //Конструктор получает имя функции и номер до кторого ведется счет
+        public iWorker(ExampleCallback _callback, ref Dictionary<string, Data> _vals) //Конструктор получает имя функции и номер до кторого ведется счет
         {
             callback = _callback;
-            //thread = new Thread(this.func);
-            //thread.Name = name;
-            //thread.Start(10);//передача параметра в поток
+            thread = new Thread(new ThreadStart(this.func));
+            vals = _vals;
         }
 
         public void func()//Функция потока, передаем параметр
         {
+            if (vals.Count == 0)
+            {
+                vals.Add("TEST", new Data("path", "", DateTime.Now));
+            }
+            
             for (int i = 0; i < (int)100; i++)
             {
                 callback(i.ToString());
                 Thread.Sleep(1000 * new Random().Next(5));
             }
+        }
+    }
+
+    class Data {
+        public string Path { get; set; }
+        public string Value { get; set; }
+        public DateTime Date { get; set; }
+
+        public Data(string _path, string _value, DateTime _date)
+        {
+            Path = _path;
+            Value = _value;
+            Date = _date;
         }
     }
 }
