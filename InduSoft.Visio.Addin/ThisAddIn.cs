@@ -80,16 +80,10 @@ namespace InduSoft.Visio.Addin
                 if (vSh.Name.Contains("ISPValue"))
                 {
                     vSh.Text = txt;
-                    try
-                    {
-                        Microsoft.Office.Interop.Visio.Cell cc = vSh.Cells["Prop.Row_1014"]; //
-                        //log.WriteDebug(cc.Formula);
-                    }
-                    catch(Exception ex)
-                    //foreach (Microsoft.Office.Interop.Visio.Cell c in vSh.Cells[1])
-                    {
-                        //log.WriteError(ex, null);
-                    }
+                   
+                        //свойство "тег": Microsoft.Office.Interop.Visio.Cell cc = vSh.Cells["Prop.Row_1014"]; 
+                      
+                
 
                 }
             }
@@ -107,6 +101,8 @@ namespace InduSoft.Visio.Addin
                     else if (vGSh.Shapes.Count >= 1) CheckGroupShapes(vGSh);
                 }
         }
+
+
         private void ribbon_btnFindISPValueClicked()
         {
             Microsoft.Office.Interop.Visio.Document vD = this.Application.ActiveDocument;
@@ -133,7 +129,7 @@ namespace InduSoft.Visio.Addin
         {
             if (ribbon.btnWorkClicked)
             {
-                w = new iWorker(new ExampleCallback(ResultCallback), ref vals);
+                w = new iWorker(new ExampleCallback(ResultCallback), this.Application.ActivePage);
                 w.thread.Start();
             }
             else if (w != null)
@@ -162,26 +158,52 @@ namespace InduSoft.Visio.Addin
     {
         public Thread thread;
         private ExampleCallback callback;
-        private Dictionary<string, Data> vals;
+        private Microsoft.Office.Interop.Visio.Page page;
 
-        public iWorker(ExampleCallback _callback, ref Dictionary<string, Data> _vals) //Конструктор получает имя функции и номер до кторого ведется счет
+        public iWorker(ExampleCallback _callback, Microsoft.Office.Interop.Visio.Page _page) //Конструктор получает имя функции и номер до кторого ведется счет
         {
             callback = _callback;
             thread = new Thread(new ThreadStart(this.func));
-            vals = _vals;
+            page = _page;
         }
 
         public void func()//Функция потока, передаем параметр
         {
-            if (vals.Count == 0)
+            foreach (Microsoft.Office.Interop.Visio.Shape vSh in page.Shapes)
             {
-                vals.Add("TEST", new Data("path", "", DateTime.Now));
+                //ищем  шейпы со значениями и проверяем на группировку
+                if (vSh.Shapes.Count >= 1)
+                {
+                    CheckGroupShapes(vSh);
+                }
+                //если группировки нет 
+                else if (vSh.Name.Contains("ISPValue"))
+                {
+                    // сюда ссылку на обработчик тега шейпа
+                    vSh.Text = "0,00";
+
+                }
+
             }
-            
+            return;
+                 
             for (int i = 0; i < (int)100; i++)
             {
                 callback(i.ToString());
                 Thread.Sleep(1000 * new Random().Next(5));
+            }
+        }
+
+        public void CheckGroupShapes(Microsoft.Office.Interop.Visio.Shape vSh)
+        {
+            foreach (Microsoft.Office.Interop.Visio.Shape vGSh in vSh.Shapes)
+            {
+                if (vGSh.Name.Contains("ISPValue"))
+                {
+                    //сюда ссылку на обработчик тега шейпа
+                    vGSh.Text = "0,00";
+                }
+                else if (vGSh.Shapes.Count >= 1) CheckGroupShapes(vGSh);
             }
         }
     }
