@@ -89,43 +89,74 @@ namespace InduSoft.Visio.Addin
         public Thread thread;
         private ExampleCallback callback;
         private Microsoft.Office.Interop.Visio.Page page;
+        
 
         public iWorker(Microsoft.Office.Interop.Visio.Page _page) //Конструктор получает имя функции и номер до кторого ведется счет
         {
             thread = new Thread(new ThreadStart(this.func));
             page = _page;
+
+            
+
+            //подключенчение к источникам данных:
+            #region PI SDK
+            PISDK.PISDK sdk = new PISDK.PISDK();
+            Server piSever = sdk.Servers.DefaultServer;
+            piSever.Open();
+            if (piSever.Connected) {  }
+            #endregion
         }
+
+
 
         public void func()//Функция потока, передаем параметр
         {
+            //свойство "тег": Microsoft.Office.Interop.Visio.Cell cc = vSh.Cells["Prop.Row_1014"]; 
+  
             foreach (Microsoft.Office.Interop.Visio.Shape vSh in page.Shapes)
             {
                 //ищем  шейпы со значениями и проверяем на группировку
-                if (vSh.Shapes.Count >= 1)
-                {
-                    CheckGroupShapes(vSh);
-                }
-                //если группировки нет 
-                else if (vSh.Name.Contains("ISPValue"))
-                {
-                    // сюда ссылку на обработчик тега шейпа
-                    vSh.Text = "0,00";
-
-                }
-
+                CheckGroupShapes(vSh);
             }
         }
 
         public void CheckGroupShapes(Microsoft.Office.Interop.Visio.Shape vSh)
         {
-            foreach (Microsoft.Office.Interop.Visio.Shape vGSh in vSh.Shapes)
+            if (vSh.Shapes.Count >= 1)
             {
-                if (vGSh.Name.Contains("ISPValue"))
+                foreach (Microsoft.Office.Interop.Visio.Shape vGSh in vSh.Shapes)
+                {
+                    CheckGroupShapes(vGSh);
+                }
+            }
+            else
+            {
+                if (vSh.Name.Contains("ISPValue"))
                 {
                     //сюда ссылку на обработчик тега шейпа
-                    vGSh.Text = "0,00";
+                    vSh.Text = "0,00";
                 }
-                else if (vGSh.Shapes.Count >= 1) CheckGroupShapes(vGSh);
+             
+            }
+        }
+
+        public void GetRTDBData(String typeRTDB, String serverName, String tagName, DateTime tM)
+        {
+            switch (typeRTDB)
+            {
+                #region PI System
+                case "PI":
+                           
+                    break;
+                #endregion
+                #region Historian
+                case "Historian":
+                    break;
+                #endregion
+                #region TSDB
+                case "TSDB":
+                    break;
+                    #endregion
             }
         }
     }

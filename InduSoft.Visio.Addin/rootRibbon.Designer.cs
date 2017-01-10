@@ -37,6 +37,7 @@
             this.tab1 = this.Factory.CreateRibbonTab();
             this.group1 = this.Factory.CreateRibbonGroup();
             this.btnWork = this.Factory.CreateRibbonToggleButton();
+            this.checkSDK = this.Factory.CreateRibbonCheckBox();
             this.tab1.SuspendLayout();
             this.group1.SuspendLayout();
             this.SuspendLayout();
@@ -51,6 +52,7 @@
             // group1
             // 
             this.group1.Items.Add(this.btnWork);
+            this.group1.Items.Add(this.checkSDK);
             this.group1.Label = "group1";
             this.group1.Name = "group1";
             // 
@@ -62,6 +64,13 @@
             this.btnWork.Name = "btnWork";
             this.btnWork.ShowImage = true;
             this.btnWork.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.toggleButton1_Click);
+            // 
+            // checkSDK
+            // 
+            this.checkSDK.Enabled = false;
+            this.checkSDK.Label = "PI SDK";
+            this.checkSDK.Name = "checkSDK";
+            this.checkSDK.ScreenTip = "Состояние подключения с PI посредством SDK";
             // 
             // rootRibbon
             // 
@@ -82,6 +91,7 @@
         internal Microsoft.Office.Tools.Ribbon.RibbonTab tab1;
         internal Microsoft.Office.Tools.Ribbon.RibbonGroup group1;
         internal Microsoft.Office.Tools.Ribbon.RibbonToggleButton btnWork;
+        internal Microsoft.Office.Tools.Ribbon.RibbonCheckBox checkSDK;
     }
 
     partial class ThisRibbonCollection
