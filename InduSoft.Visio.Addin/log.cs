@@ -21,8 +21,9 @@ namespace InduSoft.Visio.Addin
         private System.Windows.Forms.ToolStripMenuItem saveToFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
 
-        public log()
+        public log(string FormCaption)
         {
+            this.Text = FormCaption;
             this.components = new System.ComponentModel.Container();
             this.box = new System.Windows.Forms.TextBox();
             this.contextMenu = new System.Windows.Forms.ContextMenuStrip();
@@ -62,6 +63,8 @@ namespace InduSoft.Visio.Addin
             this.ShowInTaskbar = false;
             this.PerformLayout();
         }
+
+
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))

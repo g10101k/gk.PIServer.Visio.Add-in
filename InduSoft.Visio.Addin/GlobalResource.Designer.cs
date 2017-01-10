@@ -63,9 +63,19 @@ namespace InduSoft.Visio.Addin {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap hammer {
+        internal static System.Drawing.Bitmap iBug {
             get {
-                object obj = ResourceManager.GetObject("hammer", resourceCulture);
+                object obj = ResourceManager.GetObject("iBug", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap iHammer {
+            get {
+                object obj = ResourceManager.GetObject("iHammer", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

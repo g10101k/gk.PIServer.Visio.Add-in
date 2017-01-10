@@ -16,6 +16,7 @@ using Visio = Microsoft.Office.Interop.Visio;
 using Office = Microsoft.Office.Core;
 using PISDK;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace InduSoft.Visio.Addin
 {
@@ -24,15 +25,13 @@ namespace InduSoft.Visio.Addin
     public partial class ThisAddIn
     {
         private rootRibbon ribbon;
-        private log log = new log();
-        private string str = "";
-        delegate void SetTextCallbackFromThread(string text);
+        private log log = new log("ribbon");
         iWorker w;
 
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
             // TODO: Сделать поток который бы опрашивал все сервера
-            log.Show();
+
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
@@ -44,15 +43,14 @@ namespace InduSoft.Visio.Addin
         {
             ribbon = new rootRibbon();
             ribbon.btnWorkClick += ribbon_btnWorkClick;
+            ribbon.TimeChange += ribbon_editTimeChanged;
+            ribbon.PeriodInSecondsChange += ribbon_PeriodInSecondsChange;
             return Globals.Factory.GetRibbonFactory().CreateRibbonManager(new IRibbonExtension[] { ribbon });
         }
 
-        private void ribbon_btnTestClicked()
+        private void ribbon_PeriodInSecondsChange()
         {
-          //  PISDK.PISDK sdk = new PISDK.PISDK();
-           // Server ser = sdk.Servers.DefaultServer;
-          //  ser.Open();
-          //  log.WriteDebug(ser.PIPoints["sinusoid"].Data.Snapshot.Value);
+            w.Period = ribbon.PeriodInSeconds;
         }
 
         private void ribbon_btnWorkClick()
@@ -65,8 +63,13 @@ namespace InduSoft.Visio.Addin
             else if (w != null)
             {
                 if (w.thread.IsAlive)
-                   w.thread.Suspend();
-            }            
+                    w.thread.Suspend();
+            }
+        }
+
+        private void ribbon_editTimeChanged()
+        {
+            w.time = ribbon.TimeText;
         }
 
         #region VSTO generated code
@@ -80,43 +83,58 @@ namespace InduSoft.Visio.Addin
             this.Startup += new System.EventHandler(ThisAddIn_Startup);
             this.Shutdown += new System.EventHandler(ThisAddIn_Shutdown);
         }
-        
+
         #endregion
     }
 
     class iWorker
     {
         public Thread thread;
+        public string time = "*";
+        public int Period = 15;
         private ExampleCallback callback;
         private Microsoft.Office.Interop.Visio.Page page;
-        
+        private log log;
+        PISDK.PISDK sdk = new PISDK.PISDK();
 
         public iWorker(Microsoft.Office.Interop.Visio.Page _page) //Конструктор получает имя функции и номер до кторого ведется счет
         {
+
             thread = new Thread(new ThreadStart(this.func));
             page = _page;
 
-            
-
             //подключенчение к источникам данных:
-            #region PI SDK
-            PISDK.PISDK sdk = new PISDK.PISDK();
-            Server piSever = sdk.Servers.DefaultServer;
-            piSever.Open();
-            if (piSever.Connected) {  }
-            #endregion
+
         }
 
 
 
         public void func()//Функция потока, передаем параметр
         {
+            log = new log("iWorker");
+            log.Show();
             //свойство "тег": Microsoft.Office.Interop.Visio.Cell cc = vSh.Cells["Prop.Row_1014"]; 
-  
-            foreach (Microsoft.Office.Interop.Visio.Shape vSh in page.Shapes)
+
+            while (1 == 1)
             {
-                //ищем  шейпы со значениями и проверяем на группировку
-                CheckGroupShapes(vSh);
+                if (page != null)
+                {
+                    foreach (Microsoft.Office.Interop.Visio.Shape vSh in page.Shapes)
+                    {
+                        //ищем шейпы со значениями и проверяем на группировку
+                        CheckGroupShapes(vSh);
+                    }
+                }
+                WaitNSeconds(Period);
+            }
+        }
+        private void WaitNSeconds(int segundos)
+        {
+            if (segundos < 1) return;
+            DateTime _desired = DateTime.Now.AddSeconds(segundos);
+            while (DateTime.Now < _desired)
+            {
+                System.Windows.Forms.Application.DoEvents();
             }
         }
 
@@ -134,30 +152,55 @@ namespace InduSoft.Visio.Addin
                 if (vSh.Name.Contains("ISPValue"))
                 {
                     //сюда ссылку на обработчик тега шейпа
-                    vSh.Text = "0,00";
+                    Microsoft.Office.Interop.Visio.Cell format = vSh.Cells["Prop.Row_14"];
+                    Microsoft.Office.Interop.Visio.Cell path = vSh.Cells["Prop.Row_1014"];
+                    string[] tmp = path.Formula.Replace("\"","").Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
+                    log.WriteDebug(tmp[0]);
+
+                    PIValue value = GetRTDBData(tmp[0], tmp[1], tmp[2], DateTime.Now);
+                    {
+                        if (value != null)
+                            vSh.Text = value.Value.ToString(format.Formula.Replace("\"", ""));
+                    }                    
                 }
-             
             }
         }
 
-        public void GetRTDBData(String typeRTDB, String serverName, String tagName, DateTime tM)
+        public PIValue GetRTDBData(String typeRTDB, String serverName, String tagName, DateTime tM)
         {
+            PIValue val = new PIValue();
             switch (typeRTDB)
             {
                 #region PI System
-                case "PI":
-                           
+                case "PI.":
+                    Server piSever = null;
+                    try { piSever = sdk.Servers[serverName]; } catch { }
+                    if (piSever != null)
+                    {
+                        if (!piSever.Connected)
+                        {
+                            piSever.Open();                            
+                        }
+                        if (piSever.Connected)
+                            val = piSever.PIPoints[tagName].Data.ArcValue(time, RetrievalTypeConstants.rtAuto);
+                    }
+                    break;
+                case "AF.":
+
                     break;
                 #endregion
                 #region Historian
-                case "Historian":
+                case "?Historian":
+
                     break;
                 #endregion
                 #region TSDB
-                case "TSDB":
+                case "?TSDB":
+
                     break;
                     #endregion
             }
+            return val;
         }
     }
 }
